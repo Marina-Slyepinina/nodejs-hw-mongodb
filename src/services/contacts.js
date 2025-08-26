@@ -1,3 +1,4 @@
+import createHttpError from "http-errors";
 import { ContactsCollection } from "../db/models/contact.js";
 import { calculatePaginationData } from "../utils/calculatePaginationData.js";
 
@@ -34,6 +35,9 @@ export const getContactById = async (contactId, userId) => {
 
 
 export const createContact = async (payload) => {
+    const IsContactExist = await ContactsCollection.findOne({ email: payload.email });
+    if (IsContactExist) throw createHttpError(409, 'Email in use');
+
     const contact = await ContactsCollection.create(payload);
     return contact;
 };
